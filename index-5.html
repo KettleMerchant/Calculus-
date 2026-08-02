@@ -1,0 +1,752 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rules of Change — Differential Calculus</title>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Source+Serif+4:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+
+<style>
+  :root{
+    --paper:#F7F4EC;
+    --grid:rgba(44,95,138,0.10);
+    --ink:#1B2430;
+    --ink-soft:#5B6472;
+    --blue:#2C5F8A;
+    --blue-deep:#16324A;
+    --amber:#DB9330;
+    --red:#C1533B;
+    --line:rgba(27,36,48,0.14);
+    --white:#FFFDF8;
+  }
+
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  @media (prefers-reduced-motion: reduce){
+    html{scroll-behavior:auto;}
+    *{animation-duration:0.001ms !important; transition-duration:0.001ms !important;}
+  }
+
+  body{
+    margin:0;
+    background:
+      linear-gradient(var(--grid) 1px, transparent 1px) 0 0/32px 32px,
+      linear-gradient(90deg, var(--grid) 1px, transparent 1px) 0 0/32px 32px,
+      var(--paper);
+    color:var(--ink);
+    font-family:"Source Serif 4", Georgia, serif;
+    line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+  }
+
+  a{color:var(--blue-deep);}
+
+  .mono{font-family:"IBM Plex Mono", monospace;}
+
+  /* ---------- NAV ---------- */
+  nav.tabs{
+    position:sticky; top:0; z-index:50;
+    display:flex; gap:2px;
+    overflow-x:auto;
+    background:var(--blue-deep);
+    border-bottom:3px solid var(--amber);
+    padding:0 8px;
+    scrollbar-width:thin;
+  }
+  nav.tabs a{
+    flex:0 0 auto;
+    font-family:"IBM Plex Mono", monospace;
+    font-size:0.72rem;
+    letter-spacing:0.04em;
+    text-transform:uppercase;
+    color:#CFE0EF;
+    text-decoration:none;
+    padding:12px 14px;
+    border-right:1px solid rgba(255,255,255,0.08);
+    white-space:nowrap;
+    transition:background 0.15s, color 0.15s;
+  }
+  nav.tabs a:hover, nav.tabs a:focus-visible{
+    background:var(--blue);
+    color:#fff;
+    outline:none;
+  }
+
+  /* ---------- HERO ---------- */
+  header.hero{
+    padding:64px 20px 48px;
+    max-width:900px;
+    margin:0 auto;
+  }
+  .eyebrow{
+    font-family:"IBM Plex Mono", monospace;
+    font-size:0.75rem;
+    letter-spacing:0.14em;
+    text-transform:uppercase;
+    color:var(--blue);
+    border-bottom:2px solid var(--amber);
+    display:inline-block;
+    padding-bottom:4px;
+    margin-bottom:18px;
+  }
+  h1.title{
+    font-family:"IBM Plex Mono", monospace;
+    font-weight:700;
+    font-size:clamp(2.1rem, 6vw, 3.6rem);
+    line-height:1.05;
+    margin:0 0 20px;
+    color:var(--blue-deep);
+  }
+  header.hero p.lede{
+    font-size:1.15rem;
+    max-width:60ch;
+    color:var(--ink-soft);
+  }
+  header.hero p.lede strong{color:var(--ink);}
+
+  /* ---------- SECTIONS ---------- */
+  main{max-width:900px; margin:0 auto; padding:0 20px 100px;}
+
+  section.rule, section.block{
+    background:var(--white);
+    border:1px solid var(--line);
+    border-radius:2px;
+    padding:32px clamp(18px,4vw,40px);
+    margin-bottom:28px;
+    position:relative;
+    box-shadow:0 1px 0 var(--line);
+  }
+  section.rule::before{
+    content:"";
+    position:absolute; left:0; top:0; bottom:0;
+    width:5px;
+    background:var(--blue);
+  }
+  section.rule.trig::before{background:var(--amber);}
+  section.rule.expo::before{background:var(--red);}
+
+  .tag{
+    font-family:"IBM Plex Mono", monospace;
+    font-size:0.7rem;
+    letter-spacing:0.12em;
+    color:var(--blue);
+    display:block;
+    margin-bottom:6px;
+  }
+  section.rule.trig .tag, section.rule.expo .tag{color:var(--amber);}
+  section.rule.expo .tag{color:var(--red);}
+
+  h2{
+    font-family:"IBM Plex Mono", monospace;
+    font-size:1.5rem;
+    margin:0 0 18px;
+    color:var(--ink);
+  }
+  h3{
+    font-family:"IBM Plex Mono", monospace;
+    font-size:1rem;
+    text-transform:uppercase;
+    letter-spacing:0.06em;
+    color:var(--ink-soft);
+    margin:26px 0 10px;
+  }
+
+  .formula-box{
+    background:var(--paper);
+    border:1px dashed var(--line);
+    border-radius:2px;
+    padding:18px 20px;
+    margin:14px 0 20px;
+    overflow-x:auto;
+  }
+
+  .example{
+    border-left:3px solid var(--line);
+    padding-left:16px;
+    margin:16px 0;
+  }
+  .example strong{
+    font-family:"IBM Plex Mono", monospace;
+    font-size:0.75rem;
+    text-transform:uppercase;
+    letter-spacing:0.08em;
+    color:var(--ink-soft);
+    display:block;
+    margin-bottom:8px;
+  }
+
+  details.practice{
+    margin-top:18px;
+    border:1px solid var(--line);
+    border-radius:2px;
+  }
+  details.practice summary{
+    cursor:pointer;
+    padding:12px 16px;
+    font-family:"IBM Plex Mono", monospace;
+    font-size:0.85rem;
+    color:var(--blue-deep);
+    background:rgba(44,95,138,0.05);
+    list-style:none;
+  }
+  details.practice summary::-webkit-details-marker{display:none;}
+  details.practice summary::before{
+    content:"+ ";
+    color:var(--amber);
+    font-weight:700;
+  }
+  details.practice[open] summary::before{content:"− ";}
+  details.practice .answer{
+    padding:16px;
+    border-top:1px dashed var(--line);
+  }
+
+  /* ---------- GRAPHER ---------- */
+  .grapher-wrap{
+    display:grid;
+    grid-template-columns: 1fr;
+    gap:16px;
+  }
+  @media(min-width:720px){
+    .grapher-wrap{grid-template-columns: 2fr 1fr;}
+  }
+  .grapher-controls{
+    display:flex; flex-wrap:wrap; gap:10px; align-items:center;
+    margin-bottom:12px;
+  }
+  select#fnSelect{
+    font-family:"IBM Plex Mono", monospace;
+    font-size:0.85rem;
+    padding:8px 10px;
+    border:1px solid var(--line);
+    border-radius:2px;
+    background:var(--white);
+    color:var(--ink);
+  }
+  canvas#grapher{
+    width:100%;
+    aspect-ratio: 4 / 3;
+    background:var(--white);
+    border:1px solid var(--line);
+    border-radius:2px;
+    touch-action:none;
+    cursor:grab;
+  }
+  .readout{
+    font-family:"IBM Plex Mono", monospace;
+    font-size:0.9rem;
+    background:var(--blue-deep);
+    color:#EAF2F9;
+    border-radius:2px;
+    padding:18px;
+  }
+  .readout .row{
+    display:flex; justify-content:space-between; gap:10px;
+    padding:8px 0;
+    border-bottom:1px solid rgba(255,255,255,0.12);
+  }
+  .readout .row:last-child{border-bottom:none;}
+  .readout .label{color:#9DB8CC;}
+  .readout .val{color:var(--amber); font-weight:700;}
+  .grapher-hint{
+    font-size:0.8rem;
+    color:var(--ink-soft);
+    margin-top:8px;
+  }
+
+  /* ---------- QUIZ ---------- */
+  .quiz-q{margin-bottom:24px;}
+  .quiz-q p.q-text{font-weight:600; margin-bottom:10px;}
+  .quiz-opts{display:flex; flex-direction:column; gap:8px;}
+  button.opt{
+    text-align:left;
+    font-family:"Source Serif 4", serif;
+    font-size:1rem;
+    padding:10px 14px;
+    border:1px solid var(--line);
+    border-radius:2px;
+    background:var(--white);
+    cursor:pointer;
+    transition:background 0.15s, border-color 0.15s;
+  }
+  button.opt:hover{border-color:var(--blue);}
+  button.opt.correct{background:#E4EFE0; border-color:#5F9A5C; color:#2A4A28;}
+  button.opt.wrong{background:#F5E4E0; border-color:var(--red); color:#7A2E1E;}
+  button.opt:disabled{cursor:default;}
+  .quiz-score{
+    font-family:"IBM Plex Mono", monospace;
+    font-size:1rem;
+    color:var(--blue-deep);
+    border-top:2px solid var(--amber);
+    padding-top:16px;
+    margin-top:8px;
+  }
+
+  footer{
+    text-align:center;
+    font-family:"IBM Plex Mono", monospace;
+    font-size:0.75rem;
+    color:var(--ink-soft);
+    padding:40px 20px 60px;
+  }
+
+  :focus-visible{outline:2px solid var(--amber); outline-offset:2px;}
+</style>
+</head>
+<body>
+
+<nav class="tabs" aria-label="Section navigation">
+  <a href="#top">Intro</a>
+  <a href="#grapher">Grapher</a>
+  <a href="#power">Power</a>
+  <a href="#constants">Constants</a>
+  <a href="#sumdiff">Sum/Diff</a>
+  <a href="#product">Product</a>
+  <a href="#quotient">Quotient</a>
+  <a href="#chain">Chain</a>
+  <a href="#trig">Trig</a>
+  <a href="#expo">Exp &amp; Log</a>
+  <a href="#quiz">Quiz</a>
+</nav>
+
+<header class="hero" id="top">
+  <span class="eyebrow">A field notebook for ECE 1st-years</span>
+  <h1 class="title">RULES OF<br>CHANGE</h1>
+  <p class="lede">
+    Every circuit you'll ever analyze is asking the same question in disguise:
+    <strong>how fast is this quantity changing right now?</strong>
+    Current through a coil, voltage across a capacitor, a signal riding on a carrier wave —
+    differential calculus is the toolkit that answers that question exactly, instead of by eye.
+    This page walks through every rule you need to differentiate anything you'll meet this semester.
+  </p>
+</header>
+
+<main>
+
+  <section class="block" id="grapher">
+    <span class="tag mono">THE IDEA</span>
+    <h2>A derivative is a slope</h2>
+    <p>
+      Before the rules, the picture. Drag the point along the curve below.
+      The straight line is the <em>tangent</em> at that point — and its steepness is
+      the value of the derivative, <span class="tex">f'(x)</span>, at that exact <span class="tex">x</span>.
+      Every rule on this page is just a shortcut for computing that steepness without drawing a single line.
+    </p>
+    <div class="grapher-wrap">
+      <div>
+        <div class="grapher-controls">
+          <label for="fnSelect" class="mono" style="font-size:0.8rem;color:var(--ink-soft);">FUNCTION</label>
+          <select id="fnSelect">
+            <option value="x2">f(x) = x²</option>
+            <option value="x3">f(x) = x³</option>
+            <option value="sin">f(x) = sin(x)</option>
+            <option value="exp">f(x) = eˣ</option>
+          </select>
+        </div>
+        <canvas id="grapher" width="800" height="600"></canvas>
+        <p class="grapher-hint">Drag or tap anywhere on the curve to move the point.</p>
+      </div>
+      <div class="readout">
+        <div class="row"><span class="label">x</span><span class="val" id="ro-x">0.00</span></div>
+        <div class="row"><span class="label">f(x)</span><span class="val" id="ro-fx">0.00</span></div>
+        <div class="row"><span class="label">f'(x)</span><span class="val" id="ro-fpx">0.00</span></div>
+        <div class="row"><span class="label">rule</span><span class="val" id="ro-rule">—</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="rule" id="power">
+    <span class="tag mono">RULE 01</span>
+    <h2>The Power Rule</h2>
+    <p>The one you'll use more than any other. Bring the exponent down as a multiplier, then subtract one from it.</p>
+    <div class="formula-box"><span class="tex" data-display="true">\dfrac{d}{dx}\left[x^{n}\right] = n\,x^{n-1}</span></div>
+    <div class="example">
+      <strong>Example</strong>
+      <span class="tex" data-display="true">\dfrac{d}{dx}\left[x^{5}\right] = 5x^{4}</span>
+    </div>
+    <div class="example">
+      <strong>Also works with negative and fractional powers</strong>
+      <span class="tex" data-display="true">\dfrac{d}{dx}\left[\dfrac{1}{x}\right] = \dfrac{d}{dx}\left[x^{-1}\right] = -x^{-2} = -\dfrac{1}{x^{2}}</span>
+    </div>
+    <details class="practice">
+      <summary>Try it: differentiate f(x) = x⁷</summary>
+      <div class="answer"><span class="tex" data-display="true">f'(x) = 7x^{6}</span></div>
+    </details>
+  </section>
+
+  <section class="rule" id="constants">
+    <span class="tag mono">RULE 02</span>
+    <h2>Constant &amp; Constant Multiple Rules</h2>
+    <p>A flat, unchanging value has zero rate of change — its graph is a horizontal line, slope zero. A constant multiplying a function just rides along for the ride.</p>
+    <div class="formula-box"><span class="tex" data-display="true">\dfrac{d}{dx}\left[c\right] = 0 \qquad\qquad \dfrac{d}{dx}\left[c\,f(x)\right] = c\,f'(x)</span></div>
+    <div class="example">
+      <strong>Example</strong>
+      <span class="tex" data-display="true">\dfrac{d}{dx}\left[7x^{3}\right] = 7 \cdot 3x^{2} = 21x^{2}</span>
+    </div>
+    <details class="practice">
+      <summary>Try it: differentiate f(x) = 12 and g(x) = −4x⁶</summary>
+      <div class="answer"><span class="tex" data-display="true">f'(x) = 0 \qquad g'(x) = -24x^{5}</span></div>
+    </details>
+  </section>
+
+  <section class="rule" id="sumdiff">
+    <span class="tag mono">RULE 03</span>
+    <h2>Sum &amp; Difference Rule</h2>
+    <p>Differentiate a sum by differentiating each term separately, then adding the results back together. No cross-terms, no surprises.</p>
+    <div class="formula-box"><span class="tex" data-display="true">\dfrac{d}{dx}\left[f(x) \pm g(x)\right] = f'(x) \pm g'(x)</span></div>
+    <div class="example">
+      <strong>Example</strong>
+      <span class="tex" data-display="true">\dfrac{d}{dx}\left[x^{4} - 3x^{2} + 5x\right] = 4x^{3} - 6x + 5</span>
+    </div>
+    <details class="practice">
+      <summary>Try it: differentiate f(x) = 2x³ + x² − 9</summary>
+      <div class="answer"><span class="tex" data-display="true">f'(x) = 6x^{2} + 2x</span></div>
+    </details>
+  </section>
+
+  <section class="rule" id="product">
+    <span class="tag mono">RULE 04</span>
+    <h2>Product Rule</h2>
+    <p>
+      This is where people get burned — you cannot just multiply the two derivatives.
+      Instead: derivative of the first times the second, plus the first times derivative of the second.
+      <em>"First-D-Second plus Second-D-First."</em>
+    </p>
+    <div class="formula-box"><span class="tex" data-display="true">\dfrac{d}{dx}\left[f(x)g(x)\right] = f'(x)g(x) + f(x)g'(x)</span></div>
+    <div class="example">
+      <strong>Example — f(x) = x², g(x) = sin(x)</strong>
+      <span class="tex" data-display="true">\dfrac{d}{dx}\left[x^{2}\sin x\right] = 2x\sin x + x^{2}\cos x</span>
+    </div>
+    <details class="practice">
+      <summary>Try it: differentiate h(x) = x³ eˣ</summary>
+      <div class="answer"><span class="tex" data-display="true">h'(x) = 3x^{2}e^{x} + x^{3}e^{x} = x^{2}e^{x}(3 + x)</span></div>
+    </details>
+  </section>
+
+  <section class="rule" id="quotient">
+    <span class="tag mono">RULE 05</span>
+    <h2>Quotient Rule</h2>
+    <p>For a ratio of two functions. Mnemonic: <em>"Low-D-High minus High-D-Low, over the square of what's below."</em></p>
+    <div class="formula-box"><span class="tex" data-display="true">\dfrac{d}{dx}\left[\dfrac{f(x)}{g(x)}\right] = \dfrac{f'(x)g(x) - f(x)g'(x)}{\left[g(x)\right]^{2}}</span></div>
+    <div class="example">
+      <strong>Example — f(x) = x, g(x) = x + 1</strong>
+      <span class="tex" data-display="true">\dfrac{d}{dx}\left[\dfrac{x}{x+1}\right] = \dfrac{(1)(x+1) - (x)(1)}{(x+1)^{2}} = \dfrac{1}{(x+1)^{2}}</span>
+    </div>
+    <details class="practice">
+      <summary>Try it: differentiate f(x) = sin(x) / x²</summary>
+      <div class="answer"><span class="tex" data-display="true">f'(x) = \dfrac{x^{2}\cos x - 2x\sin x}{x^{4}} = \dfrac{x\cos x - 2\sin x}{x^{3}}</span></div>
+    </details>
+  </section>
+
+  <section class="rule" id="chain">
+    <span class="tag mono">RULE 06</span>
+    <h2>Chain Rule</h2>
+    <p>
+      For a function nested inside another — the single most important rule for real engineering signals
+      (think <span class="tex">\sin(\omega t)</span>). Differentiate the outside, leave the inside alone,
+      then multiply by the derivative of the inside.
+    </p>
+    <div class="formula-box"><span class="tex" data-display="true">\dfrac{d}{dx}\Big[f\big(g(x)\big)\Big] = f'\big(g(x)\big)\cdot g'(x)</span></div>
+    <div class="example">
+      <strong>Example</strong>
+      <span class="tex" data-display="true">\dfrac{d}{dx}\left[\sin(3x^{2})\right] = \cos(3x^{2}) \cdot 6x = 6x\cos(3x^{2})</span>
+    </div>
+    <div class="example">
+      <strong>The signal you'll see constantly</strong>
+      <span class="tex" data-display="true">\dfrac{d}{dt}\left[\sin(\omega t)\right] = \omega \cos(\omega t)</span>
+    </div>
+    <details class="practice">
+      <summary>Try it: differentiate f(x) = (4x + 1)⁵</summary>
+      <div class="answer"><span class="tex" data-display="true">f'(x) = 5(4x+1)^{4}\cdot 4 = 20(4x+1)^{4}</span></div>
+    </details>
+  </section>
+
+  <section class="rule trig" id="trig">
+    <span class="tag mono">RULE 07</span>
+    <h2>Trigonometric Derivatives</h2>
+    <p>Six to memorize cold — they show up in every AC signal, phasor, and oscillation you'll model.</p>
+    <div class="formula-box">
+      <span class="tex" data-display="true">
+        \dfrac{d}{dx}[\sin x] = \cos x \qquad
+        \dfrac{d}{dx}[\cos x] = -\sin x \qquad
+        \dfrac{d}{dx}[\tan x] = \sec^{2}x
+      </span>
+    </div>
+    <div class="formula-box">
+      <span class="tex" data-display="true">
+        \dfrac{d}{dx}[\csc x] = -\csc x \cot x \qquad
+        \dfrac{d}{dx}[\sec x] = \sec x \tan x \qquad
+        \dfrac{d}{dx}[\cot x] = -\csc^{2}x
+      </span>
+    </div>
+    <p style="color:var(--ink-soft); font-size:0.9rem;">
+      Notice the pattern: co-functions (cosine, cosecant, cotangent) always pick up a minus sign.
+    </p>
+    <details class="practice">
+      <summary>Try it: differentiate f(x) = x·cos(x)</summary>
+      <div class="answer">
+        <span class="tex" data-display="true">f'(x) = \cos x - x\sin x</span>
+        <p style="margin-top:8px; font-size:0.9rem; color:var(--ink-soft);">(Product rule + trig derivative, working together.)</p>
+      </div>
+    </details>
+  </section>
+
+  <section class="rule expo" id="expo">
+    <span class="tag mono">RULE 08</span>
+    <h2>Exponential &amp; Logarithmic Derivatives</h2>
+    <p><span class="tex">e^{x}</span> is the only function that is its own derivative — the reason it governs every natural growth and decay process, including RC-circuit charging curves.</p>
+    <div class="formula-box">
+      <span class="tex" data-display="true">
+        \dfrac{d}{dx}\left[e^{x}\right] = e^{x} \qquad
+        \dfrac{d}{dx}\left[a^{x}\right] = a^{x}\ln a \qquad
+        \dfrac{d}{dx}\left[\ln x\right] = \dfrac{1}{x}
+      </span>
+    </div>
+    <div class="example">
+      <strong>Example — chain rule with e</strong>
+      <span class="tex" data-display="true">\dfrac{d}{dx}\left[e^{-t/RC}\right] = -\dfrac{1}{RC}\,e^{-t/RC}</span>
+    </div>
+    <details class="practice">
+      <summary>Try it: differentiate f(x) = ln(5x² + 1)</summary>
+      <div class="answer"><span class="tex" data-display="true">f'(x) = \dfrac{10x}{5x^{2}+1}</span></div>
+    </details>
+  </section>
+
+  <section class="block" id="quiz">
+    <span class="tag mono">CHECK YOURSELF</span>
+    <h2>Five Quick Ones</h2>
+    <div id="quizContainer"></div>
+    <p class="quiz-score" id="quizScore">Score: 0 / 5</p>
+  </section>
+
+</main>
+
+<footer>
+  Built for working through ECE 1st-semester calculus, one rule at a time.
+</footer>
+
+<script>
+/* ---------------- Math rendering ---------------- */
+document.querySelectorAll('.tex').forEach(el=>{
+  const display = el.getAttribute('data-display') === 'true';
+  try{
+    katex.render(el.textContent.trim(), el, {throwOnError:false, displayMode:display});
+  }catch(e){ /* leave raw text as fallback */ }
+});
+
+/* ---------------- Grapher ---------------- */
+(function(){
+  const canvas = document.getElementById('grapher');
+  const ctx = canvas.getContext('2d');
+  const select = document.getElementById('fnSelect');
+  const roX = document.getElementById('ro-x');
+  const roFx = document.getElementById('ro-fx');
+  const roFpx = document.getElementById('ro-fpx');
+  const roRule = document.getElementById('ro-rule');
+
+  const FN = {
+    x2:  { f:x=>x*x,        fp:x=>2*x,          xMin:-3, xMax:3,   yMin:-1,  yMax:9,  rule:"Power rule: n·x^(n-1)", start:1.5 },
+    x3:  { f:x=>x*x*x,      fp:x=>3*x*x,        xMin:-2.2, xMax:2.2, yMin:-8, yMax:8,  rule:"Power rule: n·x^(n-1)", start:1 },
+    sin: { f:Math.sin,      fp:Math.cos,        xMin:-6.4, xMax:6.4, yMin:-1.6, yMax:1.6, rule:"d/dx[sin x] = cos x", start:0.7 },
+    exp: { f:Math.exp,      fp:Math.exp,        xMin:-3, xMax:2,   yMin:-1,  yMax:8,  rule:"d/dx[eˣ] = eˣ", start:1 }
+  };
+
+  let current = 'x2';
+  let x = FN[current].start;
+  let dragging = false;
+
+  function toPx(mx, my, def){
+    const w = canvas.width, h = canvas.height;
+    const px = (mx - def.xMin) / (def.xMax - def.xMin) * w;
+    const py = h - (my - def.yMin) / (def.yMax - def.yMin) * h;
+    return [px, py];
+  }
+  function toMathX(px, def){
+    const w = canvas.width;
+    return def.xMin + (px / w) * (def.xMax - def.xMin);
+  }
+
+  function draw(){
+    const def = FN[current];
+    const w = canvas.width, h = canvas.height;
+    ctx.clearRect(0,0,w,h);
+
+    // grid
+    ctx.strokeStyle = 'rgba(27,36,48,0.07)';
+    ctx.lineWidth = 1;
+    for(let gx=Math.ceil(def.xMin); gx<=def.xMax; gx++){
+      const [px] = toPx(gx, 0, def);
+      ctx.beginPath(); ctx.moveTo(px,0); ctx.lineTo(px,h); ctx.stroke();
+    }
+    for(let gy=Math.ceil(def.yMin); gy<=def.yMax; gy++){
+      const [,py] = toPx(0, gy, def);
+      ctx.beginPath(); ctx.moveTo(0,py); ctx.lineTo(w,py); ctx.stroke();
+    }
+
+    // axes
+    ctx.strokeStyle = 'rgba(27,36,48,0.35)';
+    ctx.lineWidth = 1.5;
+    if(def.yMin < 0 && def.yMax > 0){
+      const [,py0] = toPx(0,0,def);
+      ctx.beginPath(); ctx.moveTo(0,py0); ctx.lineTo(w,py0); ctx.stroke();
+    }
+    if(def.xMin < 0 && def.xMax > 0){
+      const [px0] = toPx(0,0,def);
+      ctx.beginPath(); ctx.moveTo(px0,0); ctx.lineTo(px0,h); ctx.stroke();
+    }
+
+    // curve
+    ctx.strokeStyle = '#2C5F8A';
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    const steps = 300;
+    for(let i=0;i<=steps;i++){
+      const mx = def.xMin + (def.xMax-def.xMin) * i/steps;
+      const my = def.f(mx);
+      const [px,py] = toPx(mx, my, def);
+      if(i===0) ctx.moveTo(px,py); else ctx.lineTo(px,py);
+    }
+    ctx.stroke();
+
+    // tangent line
+    const fx = def.f(x);
+    const fpx = def.fp(x);
+    const [cx, cy] = toPx(x, fx, def);
+    const span = (def.xMax - def.xMin) * 0.28;
+    const x1 = x - span, x2 = x + span;
+    const y1 = fx + fpx*(x1-x), y2 = fx + fpx*(x2-x);
+    const [p1x,p1y] = toPx(x1,y1,def);
+    const [p2x,p2y] = toPx(x2,y2,def);
+    ctx.strokeStyle = '#DB9330';
+    ctx.lineWidth = 3;
+    ctx.beginPath(); ctx.moveTo(p1x,p1y); ctx.lineTo(p2x,p2y); ctx.stroke();
+
+    // point
+    ctx.fillStyle = '#C1533B';
+    ctx.beginPath(); ctx.arc(cx,cy,7,0,Math.PI*2); ctx.fill();
+    ctx.strokeStyle = '#FFFDF8'; ctx.lineWidth = 2; ctx.stroke();
+
+    // readout
+    roX.textContent = x.toFixed(2);
+    roFx.textContent = fx.toFixed(2);
+    roFpx.textContent = fpx.toFixed(2);
+    roRule.textContent = def.rule;
+  }
+
+  function resize(){
+    const rect = canvas.getBoundingClientRect();
+    const ratio = window.devicePixelRatio || 1;
+    canvas.width = rect.width * ratio;
+    canvas.height = rect.width * 0.75 * ratio;
+    draw();
+  }
+
+  function pointerToX(evt){
+    const def = FN[current];
+    const rect = canvas.getBoundingClientRect();
+    const clientX = evt.touches ? evt.touches[0].clientX : evt.clientX;
+    const px = (clientX - rect.left) * (canvas.width / rect.width);
+    let mx = toMathX(px, def);
+    mx = Math.max(def.xMin, Math.min(def.xMax, mx));
+    return mx;
+  }
+
+  canvas.addEventListener('pointerdown', e=>{
+    dragging = true;
+    x = pointerToX(e);
+    draw();
+  });
+  window.addEventListener('pointermove', e=>{
+    if(!dragging) return;
+    x = pointerToX(e);
+    draw();
+  });
+  window.addEventListener('pointerup', ()=> dragging=false);
+
+  select.addEventListener('change', ()=>{
+    current = select.value;
+    x = FN[current].start;
+    draw();
+  });
+
+  window.addEventListener('resize', resize);
+  resize();
+})();
+
+/* ---------------- Quiz ---------------- */
+(function(){
+  const questions = [
+    {
+      q: "d/dx [ x⁶ ]",
+      opts: ["6x⁵", "x⁵", "6x⁶", "5x⁶"],
+      correct: 0
+    },
+    {
+      q: "d/dx [ 4x³ − 2x ]",
+      opts: ["4x² − 2", "12x² − 2", "12x³ − 2x", "12x²"],
+      correct: 1
+    },
+    {
+      q: "d/dx [ x·sin(x) ]  (product rule)",
+      opts: ["cos(x)", "sin(x) + x·cos(x)", "x·cos(x)", "cos(x) − x·sin(x)"],
+      correct: 1
+    },
+    {
+      q: "d/dx [ sin(5x) ]  (chain rule)",
+      opts: ["cos(5x)", "5cos(x)", "5cos(5x)", "cos(5x)/5"],
+      correct: 2
+    },
+    {
+      q: "d/dx [ eˣ / x ]  (quotient rule)",
+      opts: ["eˣ", "(eˣ·x − eˣ)/x²", "eˣ/x", "(x·eˣ − eˣ)/x"],
+      correct: 1
+    }
+  ];
+
+  const container = document.getElementById('quizContainer');
+  const scoreEl = document.getElementById('quizScore');
+  let score = 0;
+
+  questions.forEach((item, qi)=>{
+    const wrap = document.createElement('div');
+    wrap.className = 'quiz-q';
+
+    const p = document.createElement('p');
+    p.className = 'q-text mono';
+    p.textContent = `${qi+1}. ${item.q}`;
+    wrap.appendChild(p);
+
+    const optsWrap = document.createElement('div');
+    optsWrap.className = 'quiz-opts';
+
+    item.opts.forEach((optText, oi)=>{
+      const btn = document.createElement('button');
+      btn.className = 'opt mono';
+      btn.textContent = optText;
+      btn.addEventListener('click', ()=>{
+        const buttons = optsWrap.querySelectorAll('button');
+        buttons.forEach(b=> b.disabled = true);
+        if(oi === item.correct){
+          btn.classList.add('correct');
+          score++;
+        } else {
+          btn.classList.add('wrong');
+          buttons[item.correct].classList.add('correct');
+        }
+        scoreEl.textContent = `Score: ${score} / ${questions.length}`;
+      });
+      optsWrap.appendChild(btn);
+    });
+
+    wrap.appendChild(optsWrap);
+    container.appendChild(wrap);
+  });
+})();
+</script>
+
+</body>
+</html>
