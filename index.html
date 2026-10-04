@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Catch the Stars</title>
+
+<style>
+    body {
+        margin: 0;
+        font-family: Arial, sans-serif;
+        background: #111827;
+        color: white;
+        text-align: center;
+    }
+
+    h1 {
+        margin-top: 20px;
+    }
+
+    #info {
+        font-size: 20px;
+        margin: 10px;
+    }
+
+    #game {
+        position: relative;
+        width: 90%;
+        max-width: 600px;
+        height: 450px;
+        margin: 20px auto;
+        background: linear-gradient(#0f172a, #1e3a8a);
+        border: 3px solid white;
+        border-radius: 15px;
+        overflow: hidden;
+        touch-action: none;
+    }
+
+    #player {
+        position: absolute;
+        bottom: 15px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 90px;
+        height: 25px;
+        background: #38bdf8;
+        border-radius: 20px;
+        cursor: grab;
+        touch-action: none;
+    }
+
+    #player:active {
+        cursor: grabbing;
+    }
+
+    .star {
+        position: absolute;
+        font-size: 32px;
+        user-select: none;
+    }
+
+    button {
+        padding: 12px 20px;
+        margin: 5px;
+        border: none;
+        border-radius: 8px;
+        font-size: 16px;
+        cursor: pointer;
+    }
+
+    #start {
+        background: #22c55e;
+        color: white;
+    }
+
+    #reset {
+        background: #ef4444;
+        color: white;
+    }
+</style>
+</head>
+
+<body>
+
+<h1>⭐ Catch the Stars ⭐</h1>
+
+<div id="info">
+    Score: <span id="score">0</span>
+    &nbsp; | &nbsp;
+    Lives: <span id="lives">3</span>
+</div>
+
+<div id="game">
+    <div id="player"></div>
+</div>
+
+<button id="start">Start Game</button>
+<button id="reset">Reset</button>
+
+<p id="message">
+    Drag the blue catcher or use ← →
+</p>
+
+<script>
+
+const game = document.getElementById("game");
+const player = document.getElementById("player");
+const scoreText = document.getElementById("score");
+const livesText = document.getElementById("lives");
+const startButton = document.getElementById("start");
+const resetButton = document.getElementById("reset");
+const message = document.getElementById("message");
+
+let score = 0;
+let lives = 3;
+let playerX = 50;
+let gameRunning = false;
+
+let stars = [];
+
+let leftPressed = false;
+let rightPressed = false;
+
+
+// ============================
+// MOVE PLAYER WITH KEYBOARD
+// ============================
+
+document.addEventListener("keydown", function(event) {
+
+    if (event.key === "ArrowLeft") {
+        leftPressed = true;
+    }
+
+    if (event.key === "ArrowRight") {
+        rightPressed = true;
+    }
+
+});
+
+
+document.addEventListener("keyup", function(event) {
+
+    if (event.key === "ArrowLeft") {
+        leftPressed = false;
+    }
+
+    if (event.key === "ArrowRight") {
+        rightPressed = false;
+    }
+
+});
+
+
+// ============================
+// MOVE PLAYER WITH TOUCH/MOUSE
+// ============================
+
+game.addEventListener("pointermove", function(event) {
+
+    if (!gameRunning) return;
+
+    const rect = game.getBoundingClientRect();
+
+    let mouseX = event.clientX - rect.left;
+
+    let percentage = (mouseX / rect.width) * 100;
+
+    playerX = Math.max(8, Math.min(92, percentage));
+
+    updatePlayer();
+
+});
+
+
+// ============================
+// UPDATE PLAYER POSITION
+// ============================
+
+function updatePlayer() {
+
+    player.style.left = playerX + "%";
+
+}
+
+
+// ============================
+// KEYBOARD MOVEMENT
+// ============================
+
+function keyboardMovement() {
+
+    if (!gameRunning) return;
+
+    if (leftPressed) {
+        playerX -= 2;
+    }
+
+    if (rightPressed) {
+        playerX += 2;
+    }
+
+    playerX = Math.max(8, Math.min(92, playerX));
+
+    updatePlayer();
+
+    requestAnimationFrame(keyboardMovement);
+
+}
+
+
+// ============================
+// CREATE STAR
+// ============================
+
+function createStar() {
+
+    if (!gameRunning) return;
+
+    const star = document.createElement("div");
+
+    star.className = "star";
+    star.innerHTML = "⭐";
+
+    star.style.left =
+        Math.random() * 90 + "%";
+
+    star.style.top = "-40px";
+
+    game.appendChild(star);
+
+    stars.push({
+        element: star,
+        y: -40,
+        speed: 2 + Math.random() * 3
+    });
+
+}
+
+
+// ============================
+// MOVE STARS
+// ============================
+
+function moveStars() {
+
+    if (!gameRunning) return;
+
+    const playerRect =
+        player.getBoundingClientRect();
+
+    for (let i = stars.length - 1; i >= 0; i--) {
+
+        const star = stars[i];
+
+        star.y += star.speed;
+
+        star.element.style.top =
+            star.y + "px";
+
+        const starRect =
+            star.element.getBoundingClientRect();
+
+
+        // CATCH STAR
+        if (
+            starRect.bottom >= playerRect.top &&
+            starRect.top <= playerRect.bottom &&
+            starRect.right >= playerRect.left &&
+            starRect.left <= playerRect.right
+        ) {
+
+            score++;
+Compose
+Write to Chassel Tabac
